@@ -1,4 +1,5 @@
 import { Board } from "@/components/Board";
+import { BoardCopilot } from "@/components/copilot/BoardCopilot";
 
 export default function Page() {
   return (
@@ -8,6 +9,7 @@ export default function Page() {
         <p>Mock data only. Ask the copilot about the board, or have it create, move or delete tasks.</p>
       </header>
       <Board />
+      <BoardCopilot />
     </main>
   );
 }
