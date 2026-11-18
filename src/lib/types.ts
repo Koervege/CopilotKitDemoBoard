@@ -13,7 +13,9 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
 export const PRIORITIES = ["low", "medium", "high"] as const;
 export type TaskPriority = (typeof PRIORITIES)[number];
 
-export interface Task {
+// A `type` (not `interface`) on purpose: useAgentContext requires a
+// JsonSerializable value, and TS interfaces don't satisfy index signatures.
+export type Task = {
   /** Stable id, e.g. "SCRUM-12". For Jira this would be the issue key. */
   id: string;
   title: string;
@@ -22,6 +24,6 @@ export interface Task {
   priority: TaskPriority;
   assignee?: string;
   storyPoints?: number;
-}
+};
 
 export type NewTask = Omit<Task, "id" | "status"> & { status?: TaskStatus };
