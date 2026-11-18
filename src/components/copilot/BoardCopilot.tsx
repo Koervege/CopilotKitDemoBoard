@@ -3,14 +3,17 @@
 import { CopilotSidebar, useAgentContext } from "@copilotkit/react-core/v2";
 import { useBoard } from "@/lib/board-store";
 import { STATUS_LABELS } from "@/lib/types";
+import { useBoardTools } from "./useBoardTools";
 
 /**
  * Everything the copilot can see and do lives here, added one capability at a time:
  *  1. Chat sidebar
  *  2. Context sharing (useAgentContext)
+ *  3. Actions: create / move tasks (useFrontendTool)
  */
 export function BoardCopilot() {
   const { tasks } = useBoard();
+  useBoardTools();
 
   // 2. Context: the live board is sent with every agent run, so answers reflect
   //    the current state (including changes made by hand in the UI).

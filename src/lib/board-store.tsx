@@ -42,29 +42,39 @@ export function BoardProvider({
     refresh().finally(() => setLoading(false));
   }, [refresh]);
 
+  // Mutations are stable (they don't change when tasks change), so copilot
+  // tools that close over them don't need to re-register on every update.
+  const createTask = useCallback(
+    async (input: NewTask) => {
+      const task = await repoRef.current.create(input);
+      await refresh();
+      return task;
+    },
+    [refresh],
+  );
+  const moveTask = useCallback(
+    async (id: string, status: TaskStatus) => {
+      const task = await repoRef.current.move(id, status);
+      await refresh();
+      return task;
+    },
+    [refresh],
+  );
+  const deleteTask = useCallback(
+    async (id: string) => {
+      await repoRef.current.remove(id);
+      await refresh();
+    },
+    [refresh],
+  );
+  const getTask = useCallback(
+    (id: string) => tasksRef.current.find((t) => t.id.toLowerCase() === id.toLowerCase()),
+    [],
+  );
+
   const value = useMemo<BoardContextValue>(
-    () => ({
-      tasks,
-      loading,
-      async createTask(input) {
-        const task = await repoRef.current.create(input);
-        await refresh();
-        return task;
-      },
-      async moveTask(id, status) {
-        const task = await repoRef.current.move(id, status);
-        await refresh();
-        return task;
-      },
-      async deleteTask(id) {
-        await repoRef.current.remove(id);
-        await refresh();
-      },
-      getTask(id) {
-        return tasksRef.current.find((t) => t.id.toLowerCase() === id.toLowerCase());
-      },
-    }),
-    [tasks, loading, refresh],
+    () => ({ tasks, loading, createTask, moveTask, deleteTask, getTask }),
+    [tasks, loading, createTask, moveTask, deleteTask, getTask],
   );
 
   return <BoardContext.Provider value={value}>{children}</BoardContext.Provider>;
