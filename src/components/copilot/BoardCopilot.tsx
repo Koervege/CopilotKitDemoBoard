@@ -10,6 +10,7 @@ import { useBoardTools } from "./useBoardTools";
  *  1. Chat sidebar
  *  2. Context sharing (useAgentContext)
  *  3. Actions: create / move tasks (useFrontendTool)
+ *  4. Generative UI: TaskCard rendered in chat (useFrontendTool `render`)
  */
 export function BoardCopilot() {
   const { tasks } = useBoard();
