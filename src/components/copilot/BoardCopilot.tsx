@@ -3,6 +3,7 @@
 import { CopilotSidebar, useAgentContext } from "@copilotkit/react-core/v2";
 import { useBoard } from "@/lib/board-store";
 import { STATUS_LABELS } from "@/lib/types";
+import { useDeleteApproval } from "./DeleteApproval";
 import { useBoardTools } from "./useBoardTools";
 
 /**
@@ -11,10 +12,12 @@ import { useBoardTools } from "./useBoardTools";
  *  2. Context sharing (useAgentContext)
  *  3. Actions: create / move tasks (useFrontendTool)
  *  4. Generative UI: TaskCard rendered in chat (useFrontendTool `render`)
+ *  5. Human-in-the-loop: approval before delete (useHumanInTheLoop)
  */
 export function BoardCopilot() {
   const { tasks } = useBoard();
   useBoardTools();
+  useDeleteApproval();
 
   // 2. Context: the live board is sent with every agent run, so answers reflect
   //    the current state (including changes made by hand in the UI).
