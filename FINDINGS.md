@@ -39,9 +39,10 @@ All five capabilities work. Every acceptance criterion passes in an automated br
 6. **CSS variable collisions.** CopilotKit's theme defines `--muted`, `--accent` and similar variables inside the chat. App CSS using the same names renders wrongly in generative-UI cards. Prefix your own (`--sb-*`).
 7. **Tool results reach `render()` as a JSON string.** Parse them before use.
 8. **HITL tools have no `handler`.** The agent pauses until `respond()` is called from the render component. That makes approval safe by design: the destructive call only runs in the Approve click.
-9. **Telemetry is on by default.** Set `COPILOTKIT_TELEMETRY_DISABLED=true`.
-10. **`maxSteps` defaults to 1** on `BuiltInAgent`. We set 5 so the agent can call a tool and then answer in one turn.
-11. Package footprint: about 1,200 npm packages with Next.js. `react-core` pulls in recharts, katex, lit and more.
+9. **Tool `render` functions can hold stale values.** A `render` that read the user list from the hook's closure still saw the empty list from first registration. Read app state inside the rendered component with a hook (see `AssignedCard`), not from the closure.
+10. **Telemetry is on by default.** Set `COPILOTKIT_TELEMETRY_DISABLED=true`.
+11. **`maxSteps` defaults to 1** on `BuiltInAgent`. We set 5 so the agent can call a tool and then answer in one turn.
+12. Package footprint: about 1,200 npm packages with Next.js. `react-core` pulls in recharts, katex, lit and more.
 
 ## Security notes
 

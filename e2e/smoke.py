@@ -32,16 +32,24 @@ with sync_playwright() as p:
     pg = b.new_page(viewport={"width": 1400, "height": 900})
     pg.goto(URL); pg.wait_for_selector(".task-card")
 
-    check("AC1 board loads mock tasks", col(pg, "in_progress") == ["SCRUM-3", "SCRUM-4"])
+    check("AC1 board loads mock tasks in 4 columns",
+          {"SCRUM-3", "SCRUM-4"} <= set(col(pg, "in_progress")) and len(col(pg, "in_review")) == 5
+          and sum(len(col(pg, s)) for s in ["todo", "in_progress", "in_review", "done"]) == 30)
+    check("Mock users shown", pg.locator(".team .avatar").count() == 8)
     check("AC2 sidebar available", pg.is_visible('[data-testid="copilot-chat-textarea"]'))
 
     send(pg, "What's in progress?")
     check("AC3 answers from board context", "SCRUM-3, SCRUM-4" in pg.inner_text("body"))
 
     send(pg, "Create a task for release notes")
-    check("AC4 create updates board", "SCRUM-8" in col(pg, "todo"))
+    check("AC4 create updates board", pg.locator('section[data-status="todo"] .task-card', has_text="Write release notes").count() == 1)
     send(pg, "Move SCRUM-5 to in progress")
     check("AC4 move updates board", "SCRUM-5" in col(pg, "in_progress"))
+
+    send(pg, "Assign SCRUM-6 to Camila")
+    card6 = pg.locator('section[data-status="todo"] .task-card', has_text="SCRUM-6")
+    check("Assign updates board", "Camila Torres" in card6.inner_text())
+    check("Assign renders card in chat", pg.locator(".chat-card", has_text="Assigned to Camila Torres").count() >= 1)
 
     send(pg, "Show me SCRUM-3")
     check("AC5 task card rendered in chat", pg.locator(".chat-card .task-card", has_text="Implement login API").count() >= 1)

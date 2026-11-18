@@ -1,12 +1,12 @@
 # CopilotKit Scrum Board POC
 
-A small Next.js Scrum board (To Do / In Progress / Done) on local mock data, with a **CopilotKit v2** sidebar. Each of the five copilot capabilities was added in its own commit:
+A small Next.js Scrum board (To Do / In Progress / In Review / Done) with 30 mock tasks and 8 mock team members, with a **CopilotKit v2** sidebar. Each of the five copilot capabilities was added in its own commit:
 
 | # | Capability | How (CopilotKit v2 API) | File |
 |---|---|---|---|
 | 1 | Chat sidebar | `<CopilotKitProvider>` + `<CopilotSidebar>` | `src/app/providers.tsx`, `src/components/copilot/BoardCopilot.tsx` |
 | 2 | Context sharing | `useAgentContext` (live board state) | `BoardCopilot.tsx` |
-| 3 | Actions (create / move) | `useFrontendTool` with zod `parameters` + `handler` | `src/components/copilot/useBoardTools.tsx` |
+| 3 | Actions (create / move / assign) | `useFrontendTool` with zod `parameters` + `handler` | `src/components/copilot/useBoardTools.tsx` |
 | 4 | Generative UI | `render` on `useFrontendTool` → `<TaskCard>` in chat (`showTask`, create, move) | `useBoardTools.tsx` |
 | 5 | Human-in-the-loop delete | `useHumanInTheLoop` (no handler; `respond()` from Approve/Cancel) | `src/components/copilot/DeleteApproval.tsx` |
 
@@ -58,8 +58,8 @@ The frontend only knows `runtimeUrl="/api/copilotkit"`.
 ## Demo script (the five capabilities)
 
 1. **Chat:** the sidebar opens on load. Say "hi".
-2. **Context:** ask "What's in progress?" It should list SCRUM-3 and SCRUM-4. Move a card by hand, ask again, and the answer changes.
-3. **Actions:** "Create a high-priority task 'Write release notes' for Sofía, 2 points", then "Move SCRUM-5 to In Progress". Watch the board update.
+2. **Context:** ask "What's in progress?" or "What is Ana working on?" It should list SCRUM-3 and SCRUM-4. Move a card by hand, ask again, and the answer changes.
+3. **Actions:** "Create a high-priority task 'Write release notes' for Sofía, 2 points", then "Move SCRUM-5 to In Review", then "Assign SCRUM-6 to Camila". Watch the board update.
 4. **Generative UI:** "Show me SCRUM-3". A task card renders inside the chat. Create and move also render cards.
 5. **Human-in-the-loop:** "Delete SCRUM-6". An approval card appears. Click **Cancel** and the task stays. Ask again and click **Delete**, and it's removed.
 

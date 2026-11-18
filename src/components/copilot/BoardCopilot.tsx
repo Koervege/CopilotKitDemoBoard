@@ -15,7 +15,7 @@ import { useBoardTools } from "./useBoardTools";
  *  5. Human-in-the-loop: approval before delete (useHumanInTheLoop)
  */
 export function BoardCopilot() {
-  const { tasks } = useBoard();
+  const { tasks, users } = useBoard();
   useBoardTools();
   useDeleteApproval();
 
@@ -23,9 +23,10 @@ export function BoardCopilot() {
   //    the current state (including changes made by hand in the UI).
   useAgentContext({
     description:
-      "Current Scrum board. Each task has id, title, description, status (todo | in_progress | done), priority, assignee and storyPoints.",
+      "Current Scrum board and team. Each task has id, title, description, type (story | task | bug), status (todo | in_progress | in_review | done), priority, assigneeId (a team member id, absent = unassigned) and storyPoints. Resolve assigneeId to a name using `team`.",
     value: {
       columns: STATUS_LABELS,
+      team: users.map(({ id, name, role }) => ({ id, name, role })),
       taskCount: tasks.length,
       tasks,
     },
@@ -36,7 +37,7 @@ export function BoardCopilot() {
       defaultOpen
       labels={{
         modalHeaderTitle: "Scrum Copilot",
-        welcomeMessageText: "Hi! Ask me about the sprint, or tell me to create, move or delete tasks.",
+        welcomeMessageText: "Hi! Ask me about the sprint or the team, or tell me to create, move, assign or delete tasks.",
         chatInputPlaceholder: "e.g. What's in progress?",
       }}
     />

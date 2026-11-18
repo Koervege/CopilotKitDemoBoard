@@ -17,11 +17,11 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 
-.page { padding: 24px 32px; max-width: 1200px; }
+.page { padding: 24px 32px; }
 .page__header h1 { margin: 0 0 4px; font-size: 22px; }
 .page__header p { margin: 0 0 20px; color: var(--sb-muted); font-size: 14px; }
 
-.board { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 16px; align-items: start; }
+.board { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 14px; align-items: start; overflow-x: auto; padding-bottom: 8px; }
 .column { background: #eceef2; border-radius: 10px; padding: 12px; min-height: 200px; }
 .column__title { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--sb-muted); margin: 0 0 10px; }
 .column__count { background: var(--sb-surface); border-radius: 999px; padding: 1px 8px; margin-left: 4px; }
@@ -35,9 +35,22 @@ body { margin: 0; }
 .task-card__id { font-weight: 600; color: var(--sb-accent); font-size: 12px; }
 .task-card__title { font-size: 14px; margin: 6px 0 4px; }
 .task-card__desc { margin: 0 0 8px; color: var(--sb-muted); }
-.task-card__meta { display: flex; gap: 14px; margin: 0; }
-.task-card__meta dt { font-size: 10px; text-transform: uppercase; color: var(--sb-muted); }
-.task-card__meta dd { margin: 0; }
+.task-card__meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; }
+.assignee { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; min-width: 0; }
+.assignee > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta-right { display: inline-flex; align-items: center; gap: 6px; }
+.points { background: #eceef2; border-radius: 999px; min-width: 20px; padding: 1px 6px; text-align: center; font-size: 11px; font-weight: 600; }
+.status-pill { font-size: 11px; color: var(--sb-muted); }
+.avatar { display: inline-flex; align-items: center; justify-content: center; flex: none; border-radius: 50%; color: #fff; font-weight: 600; letter-spacing: .02em; }
+.avatar--empty { background: #d1d5db; color: #6b7280; }
+.type-icon { margin-right: 5px; font-size: 10px; }
+.type-story { color: #16a34a; }
+.type-task { color: #2563eb; }
+.type-bug { color: var(--sb-high); }
+.column__points { float: right; font-weight: 500; text-transform: none; letter-spacing: 0; }
+.team { display: flex; align-items: center; gap: 4px; margin: 0 0 18px; }
+.team .avatar { box-shadow: 0 0 0 2px var(--sb-bg); }
+.team__label { font-size: 12px; color: var(--sb-muted); margin-left: 8px; }
 .task-card__footer { margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 .badge { font-size: 10px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; color: #fff; }
@@ -61,5 +74,5 @@ body { margin: 0; }
 .status-note.no { color: var(--sb-muted); }
 
 @media (max-width: 800px) {
-  .board { grid-template-columns: 1fr; }
+  .board { grid-template-columns: repeat(4, 85vw); }
 }

@@ -37,9 +37,11 @@ class H(BaseHTTPRequestHandler):
             ids = sorted(set(i for i in ["SCRUM-3","SCRUM-4"] if i in ctx))
             reply = "In progress (from context): " + ", ".join(ids) if ids else "NO CONTEXT RECEIVED"
         elif "create" in t:
-            tool = ("createTask", {"title": "Write release notes", "priority": "high", "assignee": "Sofía", "storyPoints": 2})
+            tool = ("createTask", {"title": "Write release notes", "type": "task", "priority": "high", "assigneeId": "u-sofia", "storyPoints": 2})
         elif "move" in t:
             tool = ("moveTask", {"taskId": "SCRUM-5", "status": "in_progress"})
+        elif "assign" in t:
+            tool = ("assignTask", {"taskId": "SCRUM-6", "assigneeId": "u-camila"})
         elif "show" in t:
             tool = ("showTask", {"taskId": "SCRUM-3"})
         elif "delete" in t:

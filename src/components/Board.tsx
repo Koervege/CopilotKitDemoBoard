@@ -17,6 +17,9 @@ export function Board() {
           <section key={status} className="column" data-status={status}>
             <h2 className="column__title">
               {STATUS_LABELS[status]} <span className="column__count">{columnTasks.length}</span>
+              <span className="column__points">
+                {columnTasks.reduce((sum, t) => sum + (t.storyPoints ?? 0), 0)} pts
+              </span>
             </h2>
             <div className="column__list">
               {columnTasks.map((task) => (

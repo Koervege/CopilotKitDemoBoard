@@ -1,4 +1,5 @@
 import { Board } from "@/components/Board";
+import { TeamStrip } from "@/components/TeamStrip";
 import { BoardCopilot } from "@/components/copilot/BoardCopilot";
 
 export default function Page() {
@@ -6,8 +7,9 @@ export default function Page() {
     <main className="page">
       <header className="page__header">
         <h1>Sprint 14 · Scrum Board</h1>
-        <p>Mock data only. Ask the copilot about the board, or have it create, move or delete tasks.</p>
+        <p>Mock data only. Ask the copilot about the board, or have it create, move, assign or delete tasks.</p>
       </header>
+      <TeamStrip />
       <Board />
       <BoardCopilot />
     </main>
