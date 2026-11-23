@@ -91,6 +91,14 @@ with sync_playwright() as p:
     pg.wait_for_timeout(2500)
     check("AC6 approve deletes task", "SCRUM-6" not in col(pg, "todo"))
 
+    sidebar = '[data-testid="copilot-sidebar"]'
+    pg.click(".chat-handle"); pg.wait_for_timeout(500)
+    check("Chat collapses from the edge handle", pg.get_attribute(sidebar, "aria-hidden") == "true")
+    pg.reload(); pg.wait_for_selector(".task-card"); pg.wait_for_timeout(500)
+    check("Collapsed state survives a reload", pg.get_attribute(sidebar, "aria-hidden") == "true")
+    pg.click(".chat-handle"); pg.wait_for_timeout(500)
+    check("Chat expands again", pg.get_attribute(sidebar, "aria-hidden") == "false")
+
     html = pg.content()
     check("AC7 no API key in page", "sk-ant" not in html and "ANTHROPIC_API_KEY" not in html)
     b.close()

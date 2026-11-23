@@ -85,7 +85,12 @@ One full demo session per model, run in `next dev` on a home connection. Sonnet:
 9. **Tool `render` functions can hold stale values.** A `render` that read the user list from the hook's closure still saw the empty list from first registration. Read app state inside the rendered component with a hook (see `AssignedCard`), not from the closure.
 10. **Telemetry is on by default.** Set `COPILOTKIT_TELEMETRY_DISABLED=true`.
 11. **`maxSteps` defaults to 1** on `BuiltInAgent`. We set 5 so the agent can call a tool and then answer in one turn.
-12. Package footprint: about 1,200 npm packages with Next.js. `react-core` pulls in recharts, katex, lit and more.
+12. **Controlling the sidebar.**
+    - `CopilotSidebar` takes `open` / `onOpenChange` to control it from outside.
+    - The `toggleButton` slot replaces the round floating button, but it must be a `forwardRef` component.
+    - Pass an explicit `width`. Without it, the sidebar measures its own width in a loop, and in a scaled viewport it shrank to about 1px.
+13. **Dev inspector.** In `next dev`, CopilotKit shows an inspector. Its panel advertises "Rich Threads" (stored conversation history in CopilotKit Intelligence) and "Automatic Learning" (Intelligence mining past threads to propose skills you approve). Both are hosted-service features and are off here. The inspector doesn't appear in `next build && next start`.
+14. Package footprint: about 1,200 npm packages with Next.js. `react-core` pulls in recharts, katex, lit and more.
 
 ## Security notes
 
