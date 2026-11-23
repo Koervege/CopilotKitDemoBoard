@@ -62,7 +62,7 @@ The frontend only knows `runtimeUrl="/api/copilotkit"`.
 3. **Actions:** "Create a high-priority task 'Write release notes' for Sofía, 2 points", then "Move SCRUM-5 to In Review", then "Assign SCRUM-6 to Camila". Watch the board update.
 4. **Generative UI:** "Show me SCRUM-3". A task card renders inside the chat. Create and move also render cards.
 5. **Human-in-the-loop:** "Delete SCRUM-6". An approval card appears. Click **Cancel** and the task stays. Ask again and click **Delete**, and it's removed.
-6. **Backlog:** "What's in the backlog?", then "Move SCRUM-23 to the backlog" and "Pull SCRUM-32 into the sprint and start it". The tab counts change, and the cards move between the **Sprint board** and **Backlog** tabs. By hand, use **Move to backlog** in a card's status menu, or **Add to Sprint 14** on a backlog card.
+6. **Backlog:** "What's in the backlog?", then "Move SCRUM-23 to the backlog" and "Pull SCRUM-32 into the sprint and start it". The tab counts change, and the cards move between the **Sprint board** and **Backlog** tabs. By hand, use **Move to backlog** in a card's status menu, or **Add to Sprint 14** on a backlog card. To assign a card by hand, click the assignee name on it.
 
 Each task has a `location`: `sprint` (on the board) or `backlog`. Backlog tasks are always "To Do". The copilot's `planTask` tool moves a task between the two, and `moveTask` changes columns only for sprint tasks.
 

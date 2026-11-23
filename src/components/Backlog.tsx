@@ -6,7 +6,7 @@ import { TaskCard } from "./TaskCard";
 
 /** Product backlog: tasks not planned into the current sprint, in rank order. */
 export function Backlog() {
-  const { tasks, setTaskLocation } = useBoard();
+  const { tasks, setTaskLocation, assignTask } = useBoard();
   const backlog = tasks.filter((t) => t.location === "backlog");
   const points = backlog.reduce((sum, t) => sum + (t.storyPoints ?? 0), 0);
 
@@ -21,6 +21,7 @@ export function Backlog() {
           <TaskCard
             key={task.id}
             task={task}
+            onAssign={(assigneeId) => assignTask(task.id, assigneeId)}
             footer={
               <button className="btn" onClick={() => setTaskLocation(task.id, "sprint")}>
                 Add to {CURRENT_SPRINT}

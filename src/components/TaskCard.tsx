@@ -26,12 +26,15 @@ export function TaskCard({
   task,
   footer,
   compact = false,
+  onAssign,
 }: {
   task: Task;
   footer?: React.ReactNode;
   compact?: boolean;
+  /** When set, the assignee becomes a dropdown. Pass null to unassign. */
+  onAssign?: (assigneeId: string | null) => void;
 }) {
-  const { getUser } = useBoard();
+  const { getUser, users } = useBoard();
   const assignee = getUser(task.assigneeId);
 
   return (
@@ -50,7 +53,23 @@ export function TaskCard({
       <div className="task-card__meta">
         <span className="assignee">
           <Avatar user={assignee} />
-          <span>{assignee?.name ?? "Unassigned"}</span>
+          {onAssign ? (
+            <select
+              className="assignee-select"
+              aria-label={`Assignee for ${task.id}`}
+              value={task.assigneeId ?? ""}
+              onChange={(e) => onAssign(e.target.value || null)}
+            >
+              <option value="">Unassigned</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span>{assignee?.name ?? "Unassigned"}</span>
+          )}
         </span>
         <span className="meta-right">
           {compact && (

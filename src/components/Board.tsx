@@ -8,7 +8,7 @@ const TO_BACKLOG = "__backlog";
 
 /** The current sprint, as four status columns. Backlog tasks are not shown here. */
 export function Board() {
-  const { tasks, moveTask, setTaskLocation } = useBoard();
+  const { tasks, moveTask, setTaskLocation, assignTask } = useBoard();
   const sprintTasks = tasks.filter((t) => t.location === "sprint");
 
   return (
@@ -28,6 +28,7 @@ export function Board() {
                 <TaskCard
                   key={task.id}
                   task={task}
+                  onAssign={(assigneeId) => assignTask(task.id, assigneeId)}
                   footer={
                     <label className="move">
                       <span className="sr-only">Move {task.id}</span>
