@@ -32,7 +32,9 @@ body { margin: 0; }
 .backlog { background: #eceef2; border-radius: 10px; padding: 12px; max-width: 760px; }
 .backlog__list { display: flex; flex-direction: column; gap: 8px; }
 
-.board { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 14px; align-items: start; overflow-x: auto; padding-bottom: 8px; }
+/* position: relative keeps the absolutely positioned .sr-only labels inside the
+   horizontal scroller; otherwise they stretch the page on narrow screens. */
+.board { position: relative; display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 14px; align-items: start; overflow-x: auto; padding-bottom: 8px; }
 .column { background: #eceef2; border-radius: 10px; padding: 12px; min-height: 200px; }
 .column__title { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--sb-muted); margin: 0 0 10px; }
 .column__count { background: var(--sb-surface); border-radius: 999px; padding: 1px 8px; margin-left: 4px; }
