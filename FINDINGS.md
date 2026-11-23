@@ -55,7 +55,14 @@ One full demo session per model, run in `next dev` on a home connection. Sonnet:
   - Sonnet said "I didn't confirm any of these after making them", then corrected itself on the next turn.
   - Haiku called its own new SCRUM-31 a possible duplicate "already on the board".
   - Haiku said SCRUM-6 "was already hers" after assigning it (it had been unassigned).
-- **Suggested fix:** add a system-prompt line such as "The board context always reflects the current state, including changes your tools just made. Don't compare it with earlier turns to claim something did or didn't change." Optionally put a revision counter in the context.
+- **Fix (applied with the backlog feature):** the system prompt now says the context always shows the board as it is right now, already including the copilot's own changes, and tells the model not to compare it with earlier turns or revise earlier answers because of it. Before the fix, Sonnet invented a "correction" right after moving a task to the backlog. After the fix, the same script gave clean answers. If it comes back, add a revision counter to the context.
+- **Backlog flows work on Sonnet 5.5:**
+  - Listing the backlog.
+  - Sprint → backlog.
+  - "Pull SCRUM-32 into the sprint and start it" (`planTask`, then `moveTask`).
+  - Moving a backlog task straight to a column (the model added it to the sprint first, unprompted).
+  - Creating a task directly in the backlog.
+- The backlog adds a 6th tool (8 schemas in total) and 8 more tasks to the context. That should add roughly 1.5k input tokens per call compared with the numbers above. This is an estimate; it hasn't been re-measured.
 
 ## API gotchas
 
