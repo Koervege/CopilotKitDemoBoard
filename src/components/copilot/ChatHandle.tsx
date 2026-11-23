@@ -10,14 +10,14 @@ export function ChatHandle({ open, onToggle }: { open: boolean; onToggle: () => 
       type="button"
       className={`chat-handle${open ? " chat-handle--open" : ""}`}
       aria-expanded={open}
-      aria-label={open ? "Collapse copilot" : "Expand copilot"}
-      title={open ? "Collapse copilot" : "Expand copilot"}
+      aria-label={open ? "Collapse AI Helper" : "Expand AI Helper"}
+      title={open ? "Collapse AI Helper" : "Expand AI Helper"}
       onClick={onToggle}
     >
       <span aria-hidden="true" className="chat-handle__chevron">
         {open ? "›" : "‹"}
       </span>
-      {!open && <span className="chat-handle__label">Copilot</span>}
+      {!open && <span className="chat-handle__label">AI Helper</span>}
     </button>
   );
 }

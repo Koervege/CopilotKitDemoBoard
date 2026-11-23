@@ -57,7 +57,7 @@ The frontend only knows `runtimeUrl="/api/copilotkit"`.
 
 ## Demo script (the five capabilities)
 
-1. **Chat:** the sidebar opens on load. Say "hi". Collapse it with the tab on its left edge, and expand it again with the **Copilot** tab on the right edge of the window. The browser remembers your choice.
+1. **Chat:** the sidebar opens on load. Say "hi". Collapse it with the tab on its left edge, and expand it again with the **AI Helper** tab on the right edge of the window. The browser remembers your choice.
 2. **Context:** ask "What's in progress?" or "What is Ana working on?" It should list SCRUM-3 and SCRUM-4. Move a card by hand, ask again, and the answer changes.
 3. **Actions:** "Create a high-priority task 'Write release notes' for Sofía, 2 points", then "Move SCRUM-5 to In Review", then "Assign SCRUM-6 to Camila". Watch the board update.
 4. **Generative UI:** "Show me SCRUM-3". A task card renders inside the chat. Create and move also render cards.
