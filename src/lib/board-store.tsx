@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { InMemoryTaskRepository, type TaskRepository } from "./task-repository";
-import type { NewTask, Task, TaskStatus, User } from "./types";
+import type { NewTask, Task, TaskLocation, TaskStatus, User } from "./types";
 
 interface BoardContextValue {
   tasks: Task[];
@@ -10,6 +10,7 @@ interface BoardContextValue {
   loading: boolean;
   createTask(input: NewTask): Promise<Task>;
   moveTask(id: string, status: TaskStatus): Promise<Task>;
+  setTaskLocation(id: string, location: TaskLocation): Promise<Task>;
   assignTask(id: string, assigneeId: string | null): Promise<Task>;
   getUser(id: string | undefined): User | undefined;
   deleteTask(id: string): Promise<void>;
@@ -64,6 +65,14 @@ export function BoardProvider({
     },
     [refresh],
   );
+  const setTaskLocation = useCallback(
+    async (id: string, location: TaskLocation) => {
+      const task = await repoRef.current.setLocation(id, location);
+      await refresh();
+      return task;
+    },
+    [refresh],
+  );
   const assignTask = useCallback(
     async (id: string, assigneeId: string | null) => {
       const task = await repoRef.current.assign(id, assigneeId);
@@ -91,12 +100,13 @@ export function BoardProvider({
       loading,
       createTask,
       moveTask,
+      setTaskLocation,
       assignTask,
       deleteTask,
       getTask,
       getUser: (id) => (id ? users.find((u) => u.id === id) : undefined),
     }),
-    [tasks, users, loading, createTask, moveTask, assignTask, deleteTask, getTask],
+    [tasks, users, loading, createTask, moveTask, setTaskLocation, assignTask, deleteTask, getTask],
   );
 
   return <BoardContext.Provider value={value}>{children}</BoardContext.Provider>;

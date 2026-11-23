@@ -1,5 +1,7 @@
 import type { Task, User } from "./types";
 
+type SeedTask = Omit<Task, "location">;
+
 // Mock data only: everything on the board is sent to the LLM provider as context.
 
 export const MOCK_USERS: User[] = [
@@ -13,8 +15,8 @@ export const MOCK_USERS: User[] = [
   { id: "u-andres", name: "Andrés Castro", role: "Scrum master", color: "#475569" },
 ];
 
-// IDs SCRUM-3/4 (in progress) and SCRUM-5/6 (to do) are used by the e2e smoke test.
-export const MOCK_TASKS: Task[] = [
+// Current sprint.
+const SPRINT_TASKS: SeedTask[] = [
   // --- Done
   { id: "SCRUM-1", type: "task", title: "Set up CI pipeline", description: "GitHub Actions for lint, typecheck and build.", status: "done", priority: "high", assigneeId: "u-mateo", storyPoints: 3 },
   { id: "SCRUM-2", type: "story", title: "Design login screen", description: "Wireframes and visual design for email + SSO login.", status: "done", priority: "medium", assigneeId: "u-luis", storyPoints: 2 },
@@ -52,4 +54,22 @@ export const MOCK_TASKS: Task[] = [
   { id: "SCRUM-28", type: "task", title: "Load test the login API", description: "Target 500 requests/s with p95 < 300 ms.", status: "todo", priority: "medium", assigneeId: "u-mateo", storyPoints: 3 },
   { id: "SCRUM-29", type: "task", title: "Prepare sprint review demo", description: "Demo script and test accounts for Friday.", status: "todo", priority: "low", assigneeId: "u-andres", storyPoints: 1 },
   { id: "SCRUM-30", type: "bug", title: "Avatar upload fails for HEIC images", description: "Convert HEIC to JPEG on upload.", status: "todo", priority: "low", storyPoints: 2 },
+];
+
+// Product backlog: not planned into the current sprint yet. Always "todo".
+const BACKLOG_TASKS: SeedTask[] = [
+  { id: "SCRUM-31", type: "story", title: "Dark mode", description: "Theme toggle that follows the OS setting.", status: "todo", priority: "medium", storyPoints: 5 },
+  { id: "SCRUM-32", type: "story", title: "Single sign-on with Microsoft", description: "Azure AD / Entra ID as a second SSO provider.", status: "todo", priority: "high", storyPoints: 8 },
+  { id: "SCRUM-33", type: "task", title: "Upgrade to the latest Node LTS", description: "Bump runtime and CI images.", status: "todo", priority: "medium", assigneeId: "u-mateo", storyPoints: 2 },
+  { id: "SCRUM-34", type: "bug", title: "Tooltip clipped at the right screen edge", description: "Reposition tooltips near the viewport edge.", status: "todo", priority: "low", storyPoints: 1 },
+  { id: "SCRUM-35", type: "story", title: "Audit log for admin actions", description: "Record who changed roles and settings, and when.", status: "todo", priority: "medium", storyPoints: 5 },
+  { id: "SCRUM-36", type: "story", title: "Mobile push notifications", description: "Push for mentions and assignments.", status: "todo", priority: "low", storyPoints: 8 },
+  { id: "SCRUM-37", type: "task", title: "Remove legacy v1 API endpoints", description: "Delete endpoints unused for 90 days.", status: "todo", priority: "low", assigneeId: "u-ana", storyPoints: 3 },
+  { id: "SCRUM-38", type: "bug", title: "CSV export breaks on commas in names", description: "Quote fields that contain commas.", status: "todo", priority: "medium", storyPoints: 1 },
+];
+
+// IDs SCRUM-3/4 (in progress), SCRUM-5/6/7 (to do) and SCRUM-31 (backlog) are used by the e2e smoke test.
+export const MOCK_TASKS: Task[] = [
+  ...SPRINT_TASKS.map((t): Task => ({ ...t, location: "sprint" })),
+  ...BACKLOG_TASKS.map((t): Task => ({ ...t, location: "backlog" })),
 ];

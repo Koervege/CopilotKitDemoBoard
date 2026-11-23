@@ -1,12 +1,12 @@
 # CopilotKit Scrum Board POC
 
-A small Next.js Scrum board (To Do / In Progress / In Review / Done) with 30 mock tasks and 8 mock team members, with a **CopilotKit v2** sidebar. Each of the five copilot capabilities was added in its own commit:
+A small Next.js Scrum board with a **CopilotKit v2** sidebar. It has two tabs: **Sprint board** (To Do / In Progress / In Review / Done, 30 mock tasks) and **Backlog** (8 mock tasks not yet planned), plus 8 mock team members. Each of the five copilot capabilities was added in its own commit:
 
 | # | Capability | How (CopilotKit v2 API) | File |
 |---|---|---|---|
 | 1 | Chat sidebar | `<CopilotKitProvider>` + `<CopilotSidebar>` | `src/app/providers.tsx`, `src/components/copilot/BoardCopilot.tsx` |
 | 2 | Context sharing | `useAgentContext` (live board state) | `BoardCopilot.tsx` |
-| 3 | Actions (create / move / assign) | `useFrontendTool` with zod `parameters` + `handler` | `src/components/copilot/useBoardTools.tsx` |
+| 3 | Actions (create / move / plan / assign) | `useFrontendTool` with zod `parameters` + `handler` | `src/components/copilot/useBoardTools.tsx` |
 | 4 | Generative UI | `render` on `useFrontendTool` → `<TaskCard>` in chat (`showTask`, create, move) | `useBoardTools.tsx` |
 | 5 | Human-in-the-loop delete | `useHumanInTheLoop` (no handler; `respond()` from Approve/Cancel) | `src/components/copilot/DeleteApproval.tsx` |
 
@@ -62,6 +62,9 @@ The frontend only knows `runtimeUrl="/api/copilotkit"`.
 3. **Actions:** "Create a high-priority task 'Write release notes' for Sofía, 2 points", then "Move SCRUM-5 to In Review", then "Assign SCRUM-6 to Camila". Watch the board update.
 4. **Generative UI:** "Show me SCRUM-3". A task card renders inside the chat. Create and move also render cards.
 5. **Human-in-the-loop:** "Delete SCRUM-6". An approval card appears. Click **Cancel** and the task stays. Ask again and click **Delete**, and it's removed.
+6. **Backlog:** "What's in the backlog?", then "Move SCRUM-23 to the backlog" and "Pull SCRUM-32 into the sprint and start it". The tab counts change, and the cards move between the **Sprint board** and **Backlog** tabs. By hand, use **Move to backlog** in a card's status menu, or **Add to Sprint 14** on a backlog card.
+
+Each task has a `location`: `sprint` (on the board) or `backlog`. Backlog tasks are always "To Do". The copilot's `planTask` tool moves a task between the two, and `moveTask` changes columns only for sprint tasks.
 
 ## Testing without an API key
 

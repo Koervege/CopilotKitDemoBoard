@@ -19,6 +19,13 @@ def check(name, ok):
 def col(pg, status):
     return pg.eval_on_selector_all(f'section[data-status="{status}"] .task-card__id', "els=>els.map(e=>e.textContent)")
 
+def backlog(pg):
+    return pg.eval_on_selector_all('section[data-location="backlog"] .task-card__id', "els=>els.map(e=>e.textContent)")
+
+def tab(pg, name):
+    pg.get_by_role("tab", name=name).click()
+    pg.wait_for_timeout(200)
+
 def send(pg, text, settle_ms=3500):
     pg.fill('[data-testid="copilot-chat-textarea"]', text)
     t0 = time.time()
@@ -36,6 +43,10 @@ with sync_playwright() as p:
           {"SCRUM-3", "SCRUM-4"} <= set(col(pg, "in_progress")) and len(col(pg, "in_review")) == 5
           and sum(len(col(pg, s)) for s in ["todo", "in_progress", "in_review", "done"]) == 30)
     check("Mock users shown", pg.locator(".team .avatar").count() == 8)
+    check("Backlog items are not on the board", "SCRUM-31" not in col(pg, "todo"))
+    tab(pg, "Backlog")
+    check("Backlog tab lists 8 backlog items", len(backlog(pg)) == 8 and "SCRUM-31" in backlog(pg))
+    tab(pg, "Sprint board")
     check("AC2 sidebar available", pg.is_visible('[data-testid="copilot-chat-textarea"]'))
 
     send(pg, "What's in progress?")
@@ -53,6 +64,22 @@ with sync_playwright() as p:
 
     send(pg, "Show me SCRUM-3")
     check("AC5 task card rendered in chat", pg.locator(".chat-card .task-card", has_text="Implement login API").count() >= 1)
+
+    send(pg, "Move SCRUM-7 to the backlog")
+    check("Copilot moves a task to the backlog", "SCRUM-7" not in col(pg, "todo"))
+    check("Backlog move renders card in chat", pg.locator(".chat-card", has_text="In backlog").count() >= 1)
+    tab(pg, "Backlog")
+    check("Moved task shows in backlog", "SCRUM-7" in backlog(pg))
+    send(pg, "Plan SCRUM-31 into the sprint")
+    check("Copilot adds a backlog task to the sprint", "SCRUM-31" not in backlog(pg))
+    pg.locator('section[data-location="backlog"] .task-card', has_text="SCRUM-32").get_by_role("button").click()
+    pg.wait_for_timeout(300)
+    check("Manual 'Add to sprint' button works", "SCRUM-32" not in backlog(pg))
+    tab(pg, "Sprint board")
+    check("Planned tasks appear on the board", {"SCRUM-31", "SCRUM-32"} <= set(col(pg, "todo")))
+    pg.locator('section[data-status="todo"] .task-card', has_text="SCRUM-22").locator("select").select_option("__backlog")
+    pg.wait_for_timeout(300)
+    check("Manual 'Move to backlog' works", "SCRUM-22" not in col(pg, "todo"))
 
     send(pg, "Delete SCRUM-6")
     check("AC6 approval requested before delete", pg.locator(".chat-card", has_text="Delete this task?").count() >= 1 and "SCRUM-6" in col(pg, "todo"))

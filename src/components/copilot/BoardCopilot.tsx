@@ -2,7 +2,7 @@
 
 import { CopilotSidebar, useAgentContext } from "@copilotkit/react-core/v2";
 import { useBoard } from "@/lib/board-store";
-import { STATUS_LABELS } from "@/lib/types";
+import { CURRENT_SPRINT, STATUS_LABELS } from "@/lib/types";
 import { useDeleteApproval } from "./DeleteApproval";
 import { useBoardTools } from "./useBoardTools";
 
@@ -23,11 +23,13 @@ export function BoardCopilot() {
   //    the current state (including changes made by hand in the UI).
   useAgentContext({
     description:
-      "Current Scrum board and team. Each task has id, title, description, type (story | task | bug), status (todo | in_progress | in_review | done), priority, assigneeId (a team member id, absent = unassigned) and storyPoints. Resolve assigneeId to a name using `team`.",
+      'Current sprint, product backlog and team. Each task has id, title, description, type (story | task | bug), location ("sprint" = in the current sprint, on the board; "backlog" = not planned yet), status (todo | in_progress | in_review | done; backlog tasks are always todo), priority, assigneeId (a team member id, absent = unassigned) and storyPoints. Resolve assigneeId to a name using `team`.',
     value: {
+      currentSprint: CURRENT_SPRINT,
       columns: STATUS_LABELS,
       team: users.map(({ id, name, role }) => ({ id, name, role })),
-      taskCount: tasks.length,
+      sprintTaskCount: tasks.filter((t) => t.location === "sprint").length,
+      backlogTaskCount: tasks.filter((t) => t.location === "backlog").length,
       tasks,
     },
   });
@@ -37,7 +39,8 @@ export function BoardCopilot() {
       defaultOpen
       labels={{
         modalHeaderTitle: "Scrum Copilot",
-        welcomeMessageText: "Hi! Ask me about the sprint or the team, or tell me to create, move, assign or delete tasks.",
+        welcomeMessageText:
+          "Hi! Ask me about the sprint, the backlog or the team, or tell me to create, move, plan, assign or delete tasks.",
         chatInputPlaceholder: "e.g. What's in progress?",
       }}
     />

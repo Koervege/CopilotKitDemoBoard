@@ -30,6 +30,10 @@ class H(BaseHTTPRequestHandler):
             # summarise the tool result
             res = [b for b in body["messages"][-1]["content"] if b.get("type")=="tool_result"][0]
             reply = "Tool result: " + json.dumps(res.get("content"))[:200]
+        elif "backlog" in t:
+            tool = ("planTask", {"taskId": "SCRUM-7", "location": "backlog"})
+        elif t.startswith("plan "):
+            tool = ("planTask", {"taskId": "SCRUM-31", "location": "sprint"})
         elif "move" in t:
             tool = ("moveTask", {"taskId": "SCRUM-5", "status": "in_progress"})
         elif "in progress" in t:

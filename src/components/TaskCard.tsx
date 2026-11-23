@@ -53,7 +53,11 @@ export function TaskCard({
           <span>{assignee?.name ?? "Unassigned"}</span>
         </span>
         <span className="meta-right">
-          {compact && <span className="status-pill">{STATUS_LABELS[task.status]}</span>}
+          {compact && (
+            <span className="status-pill">
+              {task.location === "backlog" ? "Backlog" : STATUS_LABELS[task.status]}
+            </span>
+          )}
           {task.storyPoints != null && <span className="points" title="Story points">{task.storyPoints}</span>}
         </span>
       </div>

@@ -5,11 +5,15 @@ import { z } from "zod";
 import { TaskCard } from "@/components/TaskCard";
 import { useBoard } from "@/lib/board-store";
 import { MOCK_USERS } from "@/lib/mock-data";
-import { PRIORITIES, STATUSES, STATUS_LABELS, TASK_TYPES, type Task } from "@/lib/types";
+import { CURRENT_SPRINT, LOCATIONS, PRIORITIES, STATUSES, STATUS_LABELS, TASK_TYPES, type Task } from "@/lib/types";
 
 const statusSchema = z
   .enum(STATUSES)
   .describe('Column: "todo" (To Do), "in_progress" (In Progress), "in_review" (In Review) or "done" (Done)');
+
+const locationSchema = z
+  .enum(LOCATIONS)
+  .describe(`"sprint" = the current sprint (${CURRENT_SPRINT}, shown on the board); "backlog" = not planned yet`);
 
 // Schema-level enum keeps the model from inventing users. For Jira, build this from the user list.
 const userIds = MOCK_USERS.map((u) => u.id) as [string, ...string[]];
@@ -54,16 +58,18 @@ function Pending({ text }: { text: string }) {
  * 4. Generative UI: each tool's `render` draws a real React TaskCard in the chat.
  */
 export function useBoardTools() {
-  const { createTask, moveTask, assignTask, getTask } = useBoard();
+  const { createTask, moveTask, setTaskLocation, assignTask, getTask } = useBoard();
 
   useFrontendTool(
     {
       name: "createTask",
-      description: "Create a new task on the Scrum board.",
+      description:
+        'Create a new task, in the current sprint (default) or in the backlog. Use location "backlog" when the user says backlog or the work is not planned for this sprint.',
       parameters: z.object({
         title: z.string().describe("Short task title"),
         description: z.string().optional(),
-        status: statusSchema.optional().describe("Defaults to todo"),
+        location: locationSchema.optional().describe("Defaults to sprint"),
+        status: statusSchema.optional().describe("Defaults to todo. Ignored for backlog tasks"),
         type: z.enum(TASK_TYPES).default("task"),
         priority: z.enum(PRIORITIES).default("medium"),
         assigneeId: assigneeSchema.optional(),
@@ -80,7 +86,11 @@ export function useBoardTools() {
       render: ({ status, args, result }) => {
         if (status !== "complete") return <Pending text={`Creating "${args.title ?? "task"}"…`} />;
         const { task, error } = parseResult(result);
-        return task ? <ChatTaskCard label="Created" task={task} /> : <Pending text={error ?? "Could not create task"} />;
+        return task ? (
+          <ChatTaskCard label={task.location === "backlog" ? "Created in backlog" : "Created"} task={task} />
+        ) : (
+          <Pending text={error ?? "Could not create task"} />
+        );
       },
     },
     [createTask],
@@ -89,7 +99,8 @@ export function useBoardTools() {
   useFrontendTool(
     {
       name: "moveTask",
-      description: "Move an existing task to another column.",
+      description:
+        "Move a task in the current sprint to another board column. Backlog tasks must be added to the sprint first with planTask.",
       parameters: z.object({
         taskId: z.string().describe("Task id, e.g. SCRUM-3"),
         status: statusSchema,
@@ -97,8 +108,12 @@ export function useBoardTools() {
       handler: async ({ taskId, status }) => {
         const before = getTask(taskId);
         if (!before) return { ok: false, error: `Task ${taskId} not found` };
-        const task = await moveTask(taskId, status);
-        return { ok: true, from: before.status, task };
+        try {
+          const task = await moveTask(taskId, status);
+          return { ok: true, from: before.status, task };
+        } catch (err) {
+          return { ok: false, error: String(err) };
+        }
       },
       render: ({ status, args, result }) => {
         if (status !== "complete") return <Pending text={`Moving ${args.taskId ?? "task"}…`} />;
@@ -111,6 +126,34 @@ export function useBoardTools() {
       },
     },
     [moveTask, getTask],
+  );
+
+  useFrontendTool(
+    {
+      name: "planTask",
+      description: `Move a task between the current sprint (${CURRENT_SPRINT}) and the backlog. Moving to the backlog resets its status to todo.`,
+      parameters: z.object({
+        taskId: z.string().describe("Task id, e.g. SCRUM-31"),
+        location: locationSchema,
+      }),
+      handler: async ({ taskId, location }) => {
+        const before = getTask(taskId);
+        if (!before) return { ok: false, error: `Task ${taskId} not found` };
+        if (before.location === location) {
+          return { ok: true, unchanged: true, note: `${before.id} is already in the ${location}`, task: before };
+        }
+        const task = await setTaskLocation(taskId, location);
+        return { ok: true, from: before.location, previousStatus: before.status, task };
+      },
+      render: ({ status, args, result }) => {
+        if (status !== "complete") return <Pending text={`Planning ${args.taskId ?? "task"}…`} />;
+        const { task, error } = parseResult(result);
+        if (!task) return <Pending text={error ?? "Could not move task"} />;
+        const label = task.location === "backlog" ? "In backlog" : `In ${CURRENT_SPRINT}`;
+        return <ChatTaskCard label={label} task={task} />;
+      },
+    },
+    [setTaskLocation, getTask],
   );
 
   useFrontendTool(

@@ -4,15 +4,17 @@ import { useBoard } from "@/lib/board-store";
 import { STATUSES, STATUS_LABELS, type TaskStatus } from "@/lib/types";
 import { TaskCard } from "./TaskCard";
 
-export function Board() {
-  const { tasks, loading, moveTask } = useBoard();
+const TO_BACKLOG = "__backlog";
 
-  if (loading) return <p className="muted">Loading board…</p>;
+/** The current sprint, as four status columns. Backlog tasks are not shown here. */
+export function Board() {
+  const { tasks, moveTask, setTaskLocation } = useBoard();
+  const sprintTasks = tasks.filter((t) => t.location === "sprint");
 
   return (
     <div className="board">
       {STATUSES.map((status) => {
-        const columnTasks = tasks.filter((t) => t.status === status);
+        const columnTasks = sprintTasks.filter((t) => t.status === status);
         return (
           <section key={status} className="column" data-status={status}>
             <h2 className="column__title">
@@ -31,13 +33,19 @@ export function Board() {
                       <span className="sr-only">Move {task.id}</span>
                       <select
                         value={task.status}
-                        onChange={(e) => moveTask(task.id, e.target.value as TaskStatus)}
+                        onChange={(e) =>
+                          e.target.value === TO_BACKLOG
+                            ? setTaskLocation(task.id, "backlog")
+                            : moveTask(task.id, e.target.value as TaskStatus)
+                        }
                       >
                         {STATUSES.map((s) => (
                           <option key={s} value={s}>
                             {STATUS_LABELS[s]}
                           </option>
                         ))}
+                        <option disabled>──────────</option>
+                        <option value={TO_BACKLOG}>Move to backlog</option>
                       </select>
                     </label>
                   }

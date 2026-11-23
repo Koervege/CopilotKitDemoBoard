@@ -1,5 +1,5 @@
 import { MOCK_TASKS, MOCK_USERS } from "./mock-data";
-import type { NewTask, Task, TaskStatus, User } from "./types";
+import type { NewTask, Task, TaskLocation, TaskStatus, User } from "./types";
 
 /**
  * Data-source seam. The board and every copilot action go through this
@@ -13,6 +13,12 @@ export interface TaskRepository {
   listUsers(): Promise<User[]>;
   create(input: NewTask): Promise<Task>;
   move(id: string, status: TaskStatus): Promise<Task>;
+  /**
+   * Move a task between the current sprint and the backlog. Moving to the
+   * backlog resets status to "todo". For Jira: add the issue to the active
+   * sprint, or move it to the backlog.
+   */
+  setLocation(id: string, location: TaskLocation): Promise<Task>;
   /** Pass null to unassign. */
   assign(id: string, assigneeId: string | null): Promise<Task>;
   remove(id: string): Promise<void>;
@@ -41,11 +47,13 @@ export class InMemoryTaskRepository implements TaskRepository {
 
   async create(input: NewTask) {
     if (input.assigneeId) this.findUser(input.assigneeId);
+    const location = input.location ?? "sprint";
     const task: Task = {
       ...input,
       id: `SCRUM-${this.nextNumber++}`,
       type: input.type ?? "task",
-      status: input.status ?? "todo",
+      location,
+      status: location === "backlog" ? "todo" : (input.status ?? "todo"),
     };
     this.tasks.push(task);
     return { ...task };
@@ -53,7 +61,17 @@ export class InMemoryTaskRepository implements TaskRepository {
 
   async move(id: string, status: TaskStatus) {
     const task = this.find(id);
+    if (task.location === "backlog") {
+      throw new Error(`${task.id} is in the backlog. Add it to the sprint before changing its status.`);
+    }
     task.status = status;
+    return { ...task };
+  }
+
+  async setLocation(id: string, location: TaskLocation) {
+    const task = this.find(id);
+    task.location = location;
+    if (location === "backlog") task.status = "todo";
     return { ...task };
   }
 
