@@ -81,7 +81,7 @@ export function BoardCopilot() {
         width={CHAT_WIDTH}
         toggleButton={NoToggleButton}
         labels={{
-          modalHeaderTitle: "Scrum Copilot",
+          modalHeaderTitle: "AI Helper",
           welcomeMessageText:
             "Hi! Ask me about the sprint, the backlog or the team, or tell me to create, move, plan, assign or delete tasks.",
           chatInputPlaceholder: "e.g. What's in progress?",
