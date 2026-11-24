@@ -40,6 +40,7 @@ npm run dev                     # http://localhost:3000
 | `ANTHROPIC_API_KEY` | yes | Server-only. Never prefix it with `NEXT_PUBLIC_`. |
 | `COPILOT_MODEL` | no | A `provider/model` string. Defaults to `anthropic/claude-sonnet-5-5`. To switch providers, use e.g. `openai/...` or `google/...` and set that provider's key (`OPENAI_API_KEY` or `GOOGLE_API_KEY`). |
 | `COPILOTKIT_TELEMETRY_DISABLED` | no | Set it to `true` to opt out of CopilotKit's anonymous telemetry, which is on by default. |
+| `DEMO_PASSWORD` | on public deployments | When set, the whole app asks for this password once (any username), including the AI route. See `src/proxy.ts`. Leave it unset locally. |
 
 ### Runtime route
 
@@ -78,6 +79,19 @@ ANTHROPIC_API_KEY=test ANTHROPIC_BASE_URL=http://127.0.0.1:4010/v1 npm start &
 python3 e2e/smoke.py        # set CHROME_PATH to use a system Chrome instead
 npm run check:secrets       # no keys in tracked files or the client bundle
 ```
+
+## Deploying to Vercel (free Hobby plan)
+
+1. Sign in at [vercel.com](https://vercel.com) with GitHub, then choose **Add New… → Project** and import this repository. Vercel detects Next.js, so leave the build settings as they are.
+2. Before the first deploy, open **Environment Variables** and add:
+   - `ANTHROPIC_API_KEY`: your Claude Console key.
+   - `DEMO_PASSWORD`: a long password to share with your viewers. **Required.** Without it, anyone with the URL can spend your credits.
+   - `COPILOT_MODEL` = `anthropic/claude-haiku-5-5`: about 30× cheaper than Sonnet for demos.
+   - `COPILOTKIT_TELEMETRY_DISABLED` = `true`
+3. Click **Deploy**. Each push to `main` redeploys automatically.
+4. In the Claude Console, set a monthly spend limit on the key.
+
+Viewers see a browser password prompt once. Any username works; only the password is checked. Vercel's own Hobby login protection only lets the account owner in, which is why the app has its own gate. Vercel positions Hobby for personal, non-commercial projects. Check its current terms before using it for work demos.
 
 ## Architecture and the Jira follow-up
 

@@ -36,7 +36,9 @@ def send(pg, text, settle_ms=3500):
 with sync_playwright() as p:
     kw = {"executable_path": CHROME} if CHROME else {}
     b = p.chromium.launch(args=["--no-proxy-server"], **kw)
-    pg = b.new_page(viewport={"width": 1400, "height": 900})
+    # Set DEMO_PASSWORD to test a deployment behind the password gate (src/proxy.ts).
+    creds = {"username": "smoke", "password": os.environ["DEMO_PASSWORD"]} if os.environ.get("DEMO_PASSWORD") else None
+    pg = b.new_page(viewport={"width": 1400, "height": 900}, http_credentials=creds)
     pg.goto(URL); pg.wait_for_selector(".task-card")
 
     check("AC1 board loads mock tasks in 4 columns",
